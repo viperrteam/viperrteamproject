@@ -6,7 +6,7 @@ from datetime import datetime
 import json, os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'viperr-hub-secret-2024'
+app.config['SECRET_KEY'] = 'viperr-hub-secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///edtech.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -15,11 +15,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Войдите в систему для доступа к этой странице.'
 
-# ──────────────────────────────────────────────
 #  Модели — по схеме БД
-# ──────────────────────────────────────────────
 
-# Связующая таблица: пользователь ↔ теги интересов
+# Связующая таблица: пользователь -> теги интересов
 user_interests = db.Table('user_interests',
     db.Column('user_id', db.Integer, db.ForeignKey('users.user_id'), primary_key=True),
     db.Column('tag_id',  db.Integer, db.ForeignKey('tags.tag_id'),   primary_key=True)
@@ -73,10 +71,7 @@ class Tag(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# ──────────────────────────────────────────────
 #  Загрузка курсов из JSON в таблицу Materials
-# ──────────────────────────────────────────────
-
 def load_courses_from_json():
     json_path = os.path.join(os.path.dirname(__file__), 'courses.json')
     if not os.path.exists(json_path):
@@ -119,11 +114,7 @@ def load_courses_from_json():
 
     db.session.commit()
     print(f"Загружено {Material.query.count()} материалов, {Tag.query.count()} тегов.")
-
-# ──────────────────────────────────────────────
 #  Аутентификация
-# ──────────────────────────────────────────────
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -169,11 +160,7 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
-# ──────────────────────────────────────────────
-#  Каталог
-# ──────────────────────────────────────────────
-
+#Каталог
 @app.route('/')
 @app.route('/catalog')
 @login_required
@@ -197,10 +184,7 @@ def catalog():
                            search=search,
                            active_tag=tag_id)
 
-# ──────────────────────────────────────────────
 #  Профиль
-# ──────────────────────────────────────────────
-
 @app.route('/profile')
 @login_required
 def profile():
@@ -217,10 +201,7 @@ def save_interests():
     flash('Интересы сохранены!', 'success')
     return redirect(url_for('profile'))
 
-# ──────────────────────────────────────────────
 #  Запуск
-# ──────────────────────────────────────────────
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
