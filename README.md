@@ -52,6 +52,7 @@ viperrteamproject/
 │   ├── catalog.html         # Каталог курсов
 │   ├── profile.html         # Профиль пользователя
 │   ├── login.html           # Страница входа
+│   ├── for_you.html         # Страница подходящих курсов
 │   └── register.html        # Страница регистрации
 └── instance/
     ├── edtech.db        # SQLite БД (создаётся при запуске)
